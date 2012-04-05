@@ -1,5 +1,5 @@
+
 $(document).ready(function() {
-  
   // set and/or populate variables globally
   // latlong object
   lat_lons = Drupal.settings.islandora_solr_gmap.latlong;
@@ -7,9 +7,9 @@ $(document).ready(function() {
 
   // set map
   initialize_map();
-  
+
   // popup settings
-  $('#gmap-overlay, #gmap-overlay-close').click(function() {
+  $('#gmap-overlay-close').click(function() {
     // @TODO: make fade speed configureable through admin interface
     // fadeOut and empty markup
     $('#gmap-overlay-wrap').fadeOut(150, function() {
@@ -24,16 +24,10 @@ $(document).ready(function() {
   });
 });
 
-
-
-
-
 // @TODO: all these settings should be configurable through the admin interface.
-
 function initialize_map() {
   // Give them something to look at while the map loads:
   // @TODO: set via admin UI
-  init_lat_lon = "34.052234,-118.243685";
 
   // set variables
   var markers = [];
@@ -41,8 +35,8 @@ function initialize_map() {
   var selected_marker_icons = [];
   var map;
   var bounds = new google.maps.LatLngBounds();
-  
-  var latlng = new google.maps.LatLng(34.052234,-118.243685);
+
+  var latlng = new google.maps.LatLng(40.44055,-79.9961);
   var opts = {
     zoom: 14,
     center: latlng,
@@ -81,14 +75,13 @@ function initialize_map() {
 
   // set map
   map = new google.maps.Map(document.getElementById('islandora-solr-gmap'), opts);
-  
 
   // Create markers for each number.
-  marker_icons.push(null);  // it's easier to be 1-based.
+  marker_icons.push(null);  // it's easier to be 1-based. // wtf? no it isnt
   selected_marker_icons.push(null);
   for (var i = 0; i < 100; i++) {
     var num = i + 1;
-    var size = (num == 1 ? 9 : (num < 10 ? 13 : (num < 100 ? 25 : 39)));
+    var size = (num == 1 ? 9 : (num < 10 ? 13 : (num < 100 ? 25 : 39))); // this maps marker index to a size with larger index=larger point
     marker_icons.push(new google.maps.MarkerImage(
       markerUrl[0],
       new google.maps.Size(size, size),
@@ -102,12 +95,11 @@ function initialize_map() {
       new google.maps.Point((size - 1) / 2, (size - 1)/2)
     ));
   }
-  
 
   // place markers
   var total = 0;
   var init_marker = null;
-  
+
   // go over each coordinate to create markers
   for (var lat_long in lat_lons) {
 
@@ -117,9 +109,9 @@ function initialize_map() {
     var recsLength = recs.length;
 
     // get the title of the first object
-    markerTitle = lat_lons[lat_long][0].mods_title_s[0];
+    markerTitle = lat_lons[lat_long][0].mods_title_ms[0];
 
-    // add a more string if there's more than one image in a marker
+    // add a "more" string if there's more than one image in a marker
     if (recsLength > 1) {
       markerTitle += ' +' + (recsLength -1) + ' ' + Drupal.t('more');
     }
@@ -135,17 +127,15 @@ function initialize_map() {
       visible: true,
       icon: marker_icons[recsLength > 100 ? 100 : recsLength],
       title: markerTitle
-      
-    });    
-    
+
+    });
+
     // add this marker to the markers arrray
     markers.push(marker);
-    
+
     // adds to the marker bound
     bounds.extend(myLatLng);
 
-    
-    
     (function(lat_long, marker) {
       google.maps.event.addListener(marker, 'click', function() {
         showPopup(lat_long, marker);
@@ -160,16 +150,14 @@ function initialize_map() {
       google.maps.event.addListener(marker, 'mouseout', function() {
         markerOut(150);
       });
-    
-    })(lat_long, marker);
-    
-  }
-  
-  // fit the bounds we created
-  map.fitBounds(bounds);
-  
-}
 
+    })(lat_long, marker);
+
+  }
+
+  // fit the bounds we created
+//  map.fitBounds(bounds);
+}
 
 /**
  * Show Popup
@@ -197,18 +185,15 @@ function showPopup(lat_long, marker) {
     },
     dataType: 'json'
   });
-  
+
   // call function to remove the hover popup
   markerOut(0);
- 
+
   // @TODO: make fade speed configureable through admin interface
   // then fadeIn (so the markup doesn't start rendering after the popup load.)
   $('#gmap-overlay-wrap').fadeIn(150);
 
 }
-
-
-
 
 /**
  * Show Popup on Hover
@@ -218,11 +203,11 @@ function showPopupHover(lat_long, marker) {
   var recsHover = lat_lons[lat_long];
   // new object
   var gmapHover = new Object();
-  
+
   // limit sent info by one
   var arr = [];
   arr[0] = recsHover[0];
-  
+
   // generate stringified object
   gmapHover['gmapHover'] = JSON.stringify(arr);
 
@@ -243,7 +228,7 @@ function showPopupHover(lat_long, marker) {
   // @TODO: make fade speed configureable through admin interface
   // then fadeIn (so the markup doesn't start rendering after the popup load.)
   // add .stop() to stop the fading process when hovering lots of markers
-  
+
   $('#gmap-overlay-hover-wrap').stop(true, true).fadeIn(150).hover(
   function() {
     // adding this to fix a bug where when you hover an element that's underneath the popup, but popup fill fade in and out infinitely
@@ -254,14 +239,11 @@ function showPopupHover(lat_long, marker) {
   });
 }
 
-
 /**
  * Remove popup on mouseout
  */
 function markerOut(speed) {
-  
   $('#gmap-overlay-hover-wrap').fadeOut(speed, function() {
     $(this).find('#gmap-overlay-hover').html('');
   });
-      
 }
