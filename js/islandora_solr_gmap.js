@@ -77,7 +77,7 @@ function initialize_map() {
   map = new google.maps.Map(document.getElementById('islandora-solr-gmap'), opts);
 
   // Create markers for each number.
-  marker_icons.push(null);  // it's easier to be 1-based. // wtf? no it isnt
+  marker_icons.push(null); // these are the marker icons, not the marker points
   selected_marker_icons.push(null);
   for (var i = 0; i < 100; i++) {
     var num = i + 1;
@@ -156,7 +156,13 @@ function initialize_map() {
   }
 
   // fit the bounds we created
-//  map.fitBounds(bounds);
+  if (markers.length > 1) {
+    map.fitBounds(bounds);
+  }
+  var listener = google.maps.event.addListener(map, "idle", function() {
+    map.setZoom(map.getZoom()-1);
+    google.maps.event.removeListener(listener);
+  });
 }
 
 /**
