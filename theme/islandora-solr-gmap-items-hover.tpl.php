@@ -10,26 +10,14 @@
  * - $user: The user object.
  *
  */
-?>
-<?php if($marker_items): ?>
-<ul id="islandora-solr-gmap-items-hover">
-  <?php $zebra = 'odd'; ?>
-  <?php foreach($marker_items as $item): ?>
-     <li class="islandora-solr-gmap-item-hover <?php print $zebra; ?>">
-     <?php $zebra = ($zebra == 'odd'? 'even' : 'odd' ); ?>
-  
-     <?php foreach($item as $key => $value): ?>
-       <div class="solr-field">
-         <div class="solr-field-title">
-           <label><?php print $key; ?></label>
-       </div>
-         <div class="solr-field-value"><?php print (is_array($value)? implode(', ', $value) : $value); ?></div>
-       </div>
-    <?php endforeach; ?>
- 
-   </li>
-  <?php endforeach; ?>
-</ul>
-<?php else: ?>
-  <?php print t('No data found'); ?>
-<?php endif; ?>
+
+global $base_url;
+
+if ($marker_items) {
+  print '<div id="islandora-solr-gmap-items-hover">';
+  print '<img src="'. $base_url .'/fedora/repository/'. $marker_items[0]['PID'] .'/TN"/>'; // autofit this somehow
+  print '</div>';
+}
+else {
+  print t('No data found');
+}
