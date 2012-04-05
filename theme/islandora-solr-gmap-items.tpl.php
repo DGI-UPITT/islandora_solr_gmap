@@ -10,26 +10,16 @@
  * - $user: The user object.
  *
  */
-?>
-<?php if($marker_items): ?>
-<ul id="islandora-solr-gmap-items">
-  <?php $zebra = 'odd'; ?>
-  <?php foreach($marker_items as $item): ?>
-     <li class="islandora-solr-gmap-item <?php print $zebra; ?>">
-     <?php $zebra = ($zebra == 'odd'? 'even' : 'odd' ); ?>
-  
-     <?php foreach($item as $key => $value): ?>
-       <div class="solr-field">
-         <div class="solr-field-title">
-           <label><?php print $key; ?></label>
-       </div>
-         <div class="solr-field-value"><?php print (is_array($value)? implode(', ', $value) : $value); ?></div>
-       </div>
-    <?php endforeach; ?>
- 
-   </li>
-  <?php endforeach; ?>
-</ul>
-<?php else: ?>
-  <?php print t('No data found'); ?>
-<?php endif; ?>
+
+global $base_url;
+
+if ($marker_items) {
+  print '<div id="islandora-solr-gmap-items">';
+  print '  <div id="islandora-solr-image-title"><a href="'. $base_url .'/fedora/repository/'. $marker_items[0]['PID'] .'">'. $marker_items[0]['mods_title_ms'][0] .'</a></div>';
+  print '  <div id="islandora-solr-image-date">'. $marker_items[0]['mods_dateOther_ms'][0] .'</div>';
+  print '  <img src="'. $base_url .':8080/adore-djatoka/resolver?url_ver=Z39.88-2004&rft_id='. $base_url .'/fedora/repository/'. $marker_items[0]['PID'] .'/JP2/&svc_id=info:lanl-repo/svc/getRegion&svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&svc.format=image/png&svc.level=3&svc.rotate=0" id="islandora-solr-image-item"/>';
+  print '</div>';
+}
+else {
+  print t('No data found');
+}
